@@ -1,25 +1,47 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { Card, Button } from "@heroui/react";
 import { FaPaw, FaGoogle } from "react-icons/fa";
+import { toast } from "react-hot-toast";
+import { authClient } from "@/lib/auth-client";
 
 export default function LoginForm() {
-  
-  const handleSubmit = (e) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     
     const formData = new FormData(e.currentTarget);
     const { email, password } = Object.fromEntries(formData);
 
-    console.log("Logging in with Object.fromEntries:", { email, password });
+    const { data, error } = await authClient.signIn.email({
+      email,
+      password,
+      callbackURL: "/",
+    });
+
+    setLoading(false);
+
+    if (error) {
+      toast.error(error.message || "Invalid credentials. Please try again.");
+    } else {
+      toast.success("Welcome back to KindredPaws!");
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/",
+    });
   };
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-gray-50/50 px-4 py-12">
       <Card className="w-full max-w-md p-6 shadow-md border border-gray-100 bg-white rounded-2xl">
-
         <Card.Header className="flex flex-col items-center gap-2 pb-6">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">
             <FaPaw className="text-2xl text-blue-600" />
@@ -54,6 +76,7 @@ export default function LoginForm() {
 
             <Button 
               type="submit" 
+              isLoading={loading}
               className="w-full bg-blue-600 text-white hover:bg-blue-700 font-medium py-2.5 rounded-xl transition-colors shadow-sm mt-2"
             >
               Sign In
@@ -69,8 +92,8 @@ export default function LoginForm() {
 
             <Button 
               type="button"
+              onPress={handleGoogleSignIn}
               className="w-full border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 mt-2 bg-white shadow-sm"
-              onPress={() => console.log("Google Login Triggered")}
             >
               <FaGoogle className="text-red-500" />
               Google Sign In

@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 
@@ -12,6 +13,7 @@ export default function RootLayout({ children }) {
       <body>
         <Navbar />
         {/* Main content will be rendered here */}
+        <Toaster position="top-center" reverseOrder={false} />
         <main className="min-h-screen">
           {children}
         </main>

@@ -1,51 +1,59 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-// Fix: Import only Card and Button from @heroui/react
 import { Card, Button } from "@heroui/react";
 import { FaPaw } from "react-icons/fa";
+import { toast } from "react-hot-toast";
+import { authClient } from "@/lib/auth-client";
 
 export default function RegisterForm() {
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     const formData = new FormData(e.currentTarget);
     const { name, email, image, password, confirmPassword } = Object.fromEntries(formData);
 
-    // Assignment Password Validation Rules
     if (password.length < 6) {
-      console.error("Password must be at least 6 characters long.");
+      toast.error("Password must be at least 6 characters long!");
       return;
     }
     if (!/[A-Z]/.test(password)) {
-      console.error("Password must contain at least one uppercase letter."); 
+      toast.error("Password needs at least one uppercase letter!");
       return;
     }
     if (!/[a-z]/.test(password)) {
-      console.error("Password must contain at least one lowercase letter."); 
+      toast.error("Password needs at least one lowercase letter!");
       return;
     }
     if (password !== confirmPassword) {
-      console.error("Password and Confirm Password must match."); 
+      toast.error("Passwords do not match!");
       return;
     }
 
-    console.log("Validation complete! Registration payload:", {
-      name,
+    setLoading(true);
+
+    const { data, error } = await authClient.signUp.email({
       email,
-      image,
-      password
+      password,
+      name,
+      image: image || "https://i.pravatar.cc/150",
     });
 
-    // TODO: Send backend creation fetch request with payload here
+    setLoading(false);
+
+    if (error) {
+      toast.error(error.message || "Registration failed. Try again.");
+    } else {
+      toast.success("Account generated successfully!");
+    }
   };
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-gray-50/50 px-4 py-12">
       <Card className="w-full max-w-md p-6 shadow-md border border-gray-100 bg-white rounded-2xl">
-        {/* Fix: Using HeroUI v3 Compound Dot Notation */}
         <Card.Header className="flex flex-col items-center gap-2 pb-6">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">
             <FaPaw className="text-2xl text-blue-600" />
@@ -54,7 +62,6 @@ export default function RegisterForm() {
           <Card.Description className="text-sm text-gray-500">Join KindredPaws to start adopting</Card.Description>
         </Card.Header>
 
-        {/* Fix: CardBody is Card.Content in v3 */}
         <Card.Content>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -113,6 +120,7 @@ export default function RegisterForm() {
 
             <Button 
               type="submit" 
+              isLoading={loading}
               className="w-full bg-blue-600 text-white hover:bg-blue-700 font-medium py-2.5 rounded-xl transition-colors shadow-sm mt-2"
             >
               Sign Up
