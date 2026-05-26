@@ -1,11 +1,10 @@
-import React from 'react';
+import RegisterForm from "@/components/RegisterForm";
 
-const RegisterPage = () => {
-    return (
-        <div>
-            Register page
-        </div>
-    );
+export const metadata = {
+  title: "Register | KindredPaws",
+  description: "Create an account on KindredPaws to save animals and submit adoption requests.",
 };
 
-export default RegisterPage;
+export default function RegisterPage() {
+  return <RegisterForm />;
+}

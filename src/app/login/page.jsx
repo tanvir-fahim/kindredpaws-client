@@ -1,11 +1,10 @@
-import React from 'react';
+import LoginForm from "@/components/LoginForm";
 
-const LoginPage = () => {
-    return (
-        <div>
-            Login page
-        </div>
-    );
+export const metadata = {
+  title: "Login | KindredPaws",
+  description: "Log in to your KindredPaws account to manage pet adoptions and view listings.",
 };
 
-export default LoginPage;
+export default function LoginPage() {
+  return <LoginForm />;
+}
