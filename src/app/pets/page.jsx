@@ -31,8 +31,11 @@ export default function AllPetsPage() {
             .finally(() => setLoading(false));
     }, []);
 
-    const handleAdoptNowClick = (e, petName) => {
-        e.preventDefault();
+    const handleDetailsClick = (petId) => {
+        router.push(`/pets/${petId}`);
+    };
+
+    const handleAdoptNowClick = (petName) => {
         if (!session) {
             toast.error(`Please login to complete your adoption for ${petName}!`);
             router.push("/login");
@@ -62,7 +65,7 @@ export default function AllPetsPage() {
                 {loading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {[1, 2, 3, 4, 5, 6].map((idx) => (
-                            <div key={idx} className="h-107 rounded-2xl bg-gray-200 animate-pulse border border-gray-100" />
+                            <div key={idx} className="h-96 rounded-2xl bg-gray-200 animate-pulse border border-gray-100" />
                         ))}
                     </div>
                 ) : pets.length === 0 ? (
@@ -80,23 +83,21 @@ export default function AllPetsPage() {
                             <Card key={pet._id} className="border border-gray-200/60 shadow-sm hover:shadow-md transition-all duration-300 bg-white rounded-2xl overflow-hidden flex flex-col group">
 
                                 <div className="relative h-56 w-full bg-gray-100 overflow-hidden">
-                                    <div className="relative h-64 w-full bg-gray-100">
-                                        <Image
-                                            src={pet.image}
-                                            alt={pet.name}
-                                            width={500}
-                                            height={300}
-                                            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                                            onError={(e) => {
-                                                e.target.src =
-                                                    "https://images.unsplash.com/photo-1543536448-d209d2d13a1c?q=80&w=500";
-                                            }}
-                                        />
-                                    </div>
-                                    <div className="absolute top-3 left-3 bg-gray-900/80 backdrop-blur-sm text-white text-[11px] font-bold tracking-wide uppercase px-2.5 py-0.5 rounded-md shadow-sm">
+                                    <Image
+                                        src={pet.image}
+                                        alt={pet.name}
+                                        width={500}
+                                        height={300}
+                                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                                        onError={(e) => {
+                                            e.target.src =
+                                                "https://images.unsplash.com/photo-1543536448-d209d2d13a1c?q=80&w=500";
+                                        }}
+                                    />
+                                    <div className="absolute top-3 left-3 z-10 bg-gray-900/80 backdrop-blur-sm text-white text-[11px] font-bold tracking-wide uppercase px-2.5 py-0.5 rounded-md shadow-sm">
                                         {pet.species}
                                     </div>
-                                    <div className="absolute bottom-3 right-3 bg-blue-600 text-white text-xs font-black px-3 py-1 rounded-lg shadow-md">
+                                    <div className="absolute bottom-3 right-3 z-10 bg-blue-600 text-white text-xs font-black px-3 py-1 rounded-lg shadow-md">
                                         {pet.adoptionFee > 0 ? `$${pet.adoptionFee}` : "Free Adoption"}
                                     </div>
                                 </div>
@@ -125,14 +126,13 @@ export default function AllPetsPage() {
 
                                     <div className="grid grid-cols-2 gap-2 pt-2">
                                         <Button
-                                            as={Link}
-                                            href={`/pets/${pet._id}`}
+                                            onPress={() => handleDetailsClick(pet._id)}
                                             className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center justify-center gap-1 border border-gray-200/30"
                                         >
                                             <FaInfoCircle className="text-[11px]" /> Details
                                         </Button>
                                         <Button
-                                            onPress={(e) => handleAdoptNowClick(e, pet.name)}
+                                            onPress={() => handleAdoptNowClick(pet.name)}
                                             className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-3 rounded-xl transition-colors flex items-center justify-center gap-1 shadow-sm shadow-blue-200"
                                         >
                                             Adopt Now <FaChevronRight className="text-[9px]" />
