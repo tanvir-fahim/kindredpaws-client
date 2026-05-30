@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import {
     Dropdown,
     Avatar
@@ -20,6 +20,7 @@ export default function Navbar() {
     const handleLogout = async() => {
         setIsMobileMenuOpen(false);
         await authClient.signOut();
+        redirect("/login");
     };
 
     const getLinkClass = (path) => {
